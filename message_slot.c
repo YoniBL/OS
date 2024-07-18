@@ -54,7 +54,7 @@ static ssize_t device_read( struct file* file, char __user* buffer, size_t lengt
     if (ch == NULL) return -EINVAL;
     if (ch -> msg_len > length || ch -> msg_len == 0){
         if (ch -> msg_len > length){
-            return -ENOSPC
+            return -ENOSPC;
         }
         else{
             return -EWOULDBLOCK;
@@ -63,7 +63,7 @@ static ssize_t device_read( struct file* file, char __user* buffer, size_t lengt
 
     txt = (char*)kmalloc(sizeof(char)*(BUFFER_LENGTH), GFP_KERNEL);
     if (txt == NULL) return -ENOMEM; 
-    for (i = 0; i < BUFFER_LENGTH, i++){
+    for (i = 0; i < BUFFER_LENGTH; i++){
         if (get_user(txt[i], &buffer[i]) < 0) return -EFAULT;
     }
 
@@ -89,7 +89,7 @@ static ssize_t device_write( struct file* file, const char __user* buffer, size_
     
     temp = ch -> buffer;
     for (i = 0; i < length; i++){
-        if (get_user(new[i], &buffer[i])<0) return -EFAULT;     
+        if (get_user(txt[i], &buffer[i])<0) return -EFAULT;     
     }
 
     ch -> msg_len = length;
@@ -194,7 +194,7 @@ void free_channels_list(CHANNEL* head){
 // simple free list function
 void free_slots_list(SLOT* slot){
     if (slot != NULL){
-        free_slots_list(slot -> ext);
+        free_slots_list(slot -> next);
         free_channels_list(slot -> head);
         kfree(slot);
     }
@@ -208,7 +208,7 @@ static int __init simple_init(void){
         printk(KERN_ALERT "%s failed to register :  %d\n", DEVICE_NAME, MAJOR_NUM );
         return rc;
     }
-    HEAD = NULL;
+    slot_head = NULL;
     return 0;
 }
 
