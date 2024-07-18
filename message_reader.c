@@ -20,7 +20,7 @@ int main (int argc, char **argv){
     
     if (argc != 3){
         fprintf(stderr,"%s\n", strerror(EINVAL));
-        return 1;
+        exit(1);
     }
 
     fd = open(argv[1],O_RDWR);
@@ -29,13 +29,13 @@ int main (int argc, char **argv){
     ch_id = strtol(argv[2],NULL,10);
     if (ch_id <= 0){
         fprintf(stderr,"%s\n", strerror(EINVAL));
-        return 1;
+        exit(1);
     }
     if (ioctl(fd, MSG_SLOT_CHANNEL, ch_id) < 0) print_and_exit();
     
     msg_len = read(fd, buffer, BUFFER_LENGTH);
     if ((msg_len < 0) || (close(fd) < 0) || (write(STDOUT_FILENO, buffer, msg_len) != msg_len)) print_and_exit();
-    return 0;
+    exit(0);
 }
 
 
